@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#123326">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PredictPro">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<title>PredictPro — Football Predictions</title>
+<style>
+  :root {
+    --bg: #0D1310; --surface: #151C18; --surface-2: #1B2420; --ink: #ECF2EF; --ink-soft: #8FA79C; --line: #263029;
+    --brand: #34C77B; --brand-dark: #123326; --brand-tint: rgba(52,199,123,0.16);
+    --amber: #F2A93C; --amber-tint: rgba(242,169,60,0.16);
+    --red: #F2726B; --red-tint: rgba(242,114,107,0.16);
+    --blue: #5CA8E0; --blue-tint: rgba(92,168,224,0.16);
+    --purple: #B18AE0; --purple-tint: rgba(177,138,224,0.16);
+    --gold: #E8C25C; --gold-tint: rgba(232,194,92,0.16);
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; padding-bottom: 78px; }
+  a { color: inherit; }
+  button { font-family: inherit; }
+
+  header.top { background: var(--brand-dark); color: #fff; padding: 16px 16px 14px; position: sticky; top: 0; z-index: 20; }
+  .header-top-row { display: flex; justify-content: space-between; align-items: center; }
+  header.top .brand { display: flex; align-items: center; gap: 8px; }
+  header.top .brand .mark { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; }
+  header.top h1 { font-size: 19px; margin: 0; letter-spacing: 0.2px; font-weight: 700; }
+  .header-actions { display: flex; gap: 8px; }
+  .icon-btn { position: relative; background: rgba(255,255,255,0.08); border: none; color: #fff; width: 38px; height: 38px; border-radius: 10px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .bell-badge { position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; font-size: 10px; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px; font-weight: 700; }
+
+  main { padding: 0 16px 24px; max-width: 560px; margin: 0 auto; }
+
+  .greeting-banner { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%); border-radius: 12px; padding: 14px 16px; margin-top: 14px; color: #fff; }
+  .greeting-text { font-size: 16px; font-weight: 700; }
+  .greeting-sub { font-size: 12px; color: rgba(255,255,255,0.85); margin-top: 3px; max-width: 230px; }
+  .greeting-icon { font-size: 24px; background: rgba(255,255,255,0.15); width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 8px; text-align: center; }
+  .stat .num { font-size: 18px; font-weight: 800; }
+  .stat .lbl { font-size: 10.5px; color: var(--ink-soft); margin-top: 2px; }
+
+  .section-head { display: flex; justify-content: space-between; align-items: center; margin: 22px 0 10px; }
+  .section-head h2 { font-size: 15px; margin: 0; font-weight: 700; }
+  .section-head .link { font-size: 12.5px; color: var(--brand); background: none; border: none; font-weight: 600; cursor: pointer; padding: 0; }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+  .empty { text-align: center; padding: 34px 16px; color: var(--ink-soft); }
+  .empty .e-icon { font-size: 30px; margin-bottom: 8px; }
+  .empty .e-title { color: var(--ink); font-weight: 700; font-size: 14px; margin-bottom: 3px; }
+  .empty .e-sub { font-size: 12.5px; line-height: 1.5; }
+
+  /* Pills / badges */
+  .pill { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+  .pill-green { background: var(--brand-tint); color: var(--brand); }
+  .pill-amber { background: var(--amber-tint); color: var(--amber); }
+  .pill-red { background: var(--red-tint); color: var(--red); }
+  .pill-blue { background: var(--blue-tint); color: var(--blue); }
+  .pill-purple { background: var(--purple-tint); color: var(--purple); }
+  .pill-gold { background: var(--gold-tint); color: var(--gold); }
+  .pill-soft { background: var(--surface-2); color: var(--ink-soft); }
+
+  /* Fixture row */
+  .fixture-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; cursor: pointer; }
+  .fixture-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .fixture-league { font-size: 11px; color: var(--ink-soft); font-weight: 600; }
+  .fixture-teams { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .team-name { font-size: 14.5px; font-weight: 700; flex: 1; }
+  .team-name.away { text-align: right; }
+  .fixture-score { font-size: 15px; font-weight: 800; color: var(--brand); min-width: 46px; text-align: center; }
+  .fixture-vs { font-size: 11px; color: var(--ink-soft); min-width: 46px; text-align: center; }
+  .fixture-meta-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .odds-mini { display: flex; gap: 6px; }
+  .odds-chip { background: var(--surface-2); border-radius: 8px; padding: 4px 8px; text-align: center; min-width: 40px; }
+  .odds-chip .k { font-size: 9px; color: var(--ink-soft); display: block; }
+  .odds-chip .v { font-size: 12.5px; font-weight: 700; }
+
+  .predict-strip { display: flex; align-items: center; gap: 6px; margin-top: 8px; background: var(--brand-tint); border-radius: 8px; padding: 6px 10px; }
+  .predict-strip .pct { font-weight: 800; color: var(--brand); font-size: 13px; }
+  .predict-strip .txt { font-size: 11.5px; color: var(--ink-soft); flex: 1; }
+
+  /* Filter chips */
+  .chip-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-top: 12px; }
+  .chip-row::-webkit-scrollbar { display: none; }
+  .chip { flex-shrink: 0; background: var(--surface); border: 1px solid var(--line); color: var(--ink-soft); font-size: 12.5px; font-weight: 600; padding: 7px 14px; border-radius: 20px; cursor: pointer; }
+  .chip.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+  /* Pick / hero cards */
+  .pick-hero { background: linear-gradient(135deg, #1B2420 0%, var(--brand-dark) 120%); border: 1px solid var(--brand); border-radius: 14px; padding: 16px; margin-top: 14px; }
+  .pick-hero-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .pick-hero-head .tag { font-size: 11px; font-weight: 800; color: var(--gold); letter-spacing: 0.4px; }
+  .pick-hero .conf-badge { background: var(--gold-tint); color: var(--gold); font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 20px; }
+  .pick-list-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .pick-rank { width: 28px; height: 28px; border-radius: 8px; background: var(--gold-tint); color: var(--gold); font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .pick-body { flex: 1; min-width: 0; }
+  .pick-body .pmatch { font-size: 13.5px; font-weight: 700; }
+  .pick-body .pdetail { font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+
+  /* Table / standings */
+  table.standings { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.standings th { text-align: left; color: var(--ink-soft); font-weight: 600; font-size: 10.5px; padding: 6px 4px; border-bottom: 1px solid var(--line); }
+  table.standings td { padding: 8px 4px; border-bottom: 1px solid var(--line); }
+  table.standings td.num, table.standings th.num { text-align: center; }
+  table.standings tr:last-child td { border-bottom: none; }
+  .pos-badge { display: inline-flex; width: 20px; height: 20px; border-radius: 5px; background: var(--surface-2); align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-right: 6px; }
+  .form-dots { display: flex; gap: 2px; }
+  .form-dot { width: 14px; height: 14px; border-radius: 4px; font-size: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; }
+
+  /* List rows (teams/settings) */
+  .list-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; cursor: pointer; }
+  .list-row .title { font-size: 14px; font-weight: 700; }
+  .list-row .sub { font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+  .list-row .chev { color: var(--ink-soft); font-size: 13px; }
+
+  /* Bottom nav */
+  nav.bottom { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--line); display: flex; z-index: 30; padding-bottom: env(safe-area-inset-bottom); }
+  nav.bottom button { flex: 1; background: none; border: none; color: var(--ink-soft); padding: 9px 2px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-weight: 600; cursor: pointer; }
+  nav.bottom button .nico { font-size: 18px; }
+  nav.bottom button.active { color: var(--brand); }
+
+  /* Sheet / modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 40; display: none; }
+  .overlay.show { display: block; }
+  .sheet { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-radius: 18px 18px 0 0; z-index: 41; max-height: 88vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.25s ease; padding-bottom: 24px; }
+  .sheet.show { transform: translateY(0); }
+  .sheet-handle { width: 36px; height: 4px; background: var(--line); border-radius: 4px; margin: 10px auto 4px; }
+  .sheet-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 18px 6px; }
+  .sheet-head h3 { font-size: 16px; margin: 0; }
+  .sheet-close { background: var(--surface-2); border: none; color: var(--ink); width: 30px; height: 30px; border-radius: 8px; font-size: 15px; cursor: pointer; }
+  .sheet-body { padding: 6px 18px 10px; }
+
+  /* Forms */
+  label.f-label { display: block; font-size: 12px; color: var(--ink-soft); margin: 12px 0 5px; font-weight: 600; }
+  input.f-input, select.f-input, textarea.f-input { width: 100%; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink); padding: 11px 12px; border-radius: 10px; font-size: 14px; font-family: inherit; }
+  textarea.f-input { resize: vertical; min-height: 60px; }
+  .f-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .f-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .btn { display: block; width: 100%; text-align: center; padding: 13px; border-radius: 10px; font-size: 14.5px; font-weight: 700; border: none; cursor: pointer; margin-top: 18px; }
+  .btn-primary { background: var(--brand); color: #08130E; }
+  .btn-danger { background: var(--red-tint); color: var(--red); }
+  .btn-soft { background: var(--surface-2); color: var(--ink); }
+  .btn-sm { width: auto; padding: 8px 14px; font-size: 12.5px; margin-top: 0; display: inline-block; }
+
+  .fab { position: fixed; right: 16px; bottom: 90px; background: var(--brand); color: #08130E; width: 52px; height: 52px; border-radius: 16px; border: none; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(52,199,123,0.4); cursor: pointer; z-index: 25; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .odds-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 10px; }
+  .odds-box { background: var(--surface-2); border-radius: 10px; padding: 10px 6px; text-align: center; }
+  .odds-box .k { font-size: 10.5px; color: var(--ink-soft); }
+  .odds-box .v { font-size: 16px; font-weight: 800; margin-top: 3px; }
+  .odds-box.best { border: 1px solid var(--brand); background: var(--brand-tint); }
+
+  .breakdown-bar { height: 10px; border-radius: 6px; overflow: hidden; display: flex; margin-top: 6px; }
+  .bd-seg { height: 100%; }
+
+  .disclaimer { font-size: 10.5px; color: var(--ink-soft); text-align: center; line-height: 1.5; margin-top: 18px; padding: 0 8px; }
+
+  .toast { position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%); background: var(--surface-2); color: var(--ink); padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; z-index: 60; box-shadow: 0 4px 14px rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: opacity 0.2s; border: 1px solid var(--line); }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="header-top-row">
+    <div class="brand">
+      <span class="mark">⚽</span>
+      <h1>PredictPro</h1>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="notifBtn">🔔<span class="bell-badge" id="notifBadge" style="display:none">0</span></button>
+      <button class="icon-btn" id="searchBtn">🔎</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- HOME -->
+  <section class="view active" id="view-home">
+    <div class="greeting-banner">
+      <div>
+        <div class="greeting-text" id="greetText">Good evening 👋</div>
+        <div class="greeting-sub" id="greetSub">Loading today's matchday…</div>
+      </div>
+      <div class="greeting-icon">🎯</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="num" id="statFixturesToday">0</div><div class="lbl">Today's fixtures</div></div>
+      <div class="stat"><div class="num" id="statPredictions">0</div><div class="lbl">Predictions made</div></div>
+      <div class="stat"><div class="num" id="statAccuracy">—</div><div class="lbl">Hit rate</div></div>
+    </div>
+
+    <div id="homePickHero"></div>
+
+    <div class="section-head">
+      <h2>Today's fixtures</h2>
+      <button class="link" data-nav="fixtures">See all</button>
+    </div>
+    <div id="homeFixtures"></div>
+
+    <div class="section-head">
+      <h2>🔥 Daily special picks</h2>
+      <button class="link" data-nav="picks">See all</button>
+    </div>
+    <div id="homePicks"></div>
+
+    <div class="disclaimer">Predictions are generated from team stats you enter and are for informational &amp; entertainment purposes only — not a guarantee of results. Please gamble responsibly.</div>
+  </section>
+
+  <!-- FIXTURES -->
+  <section class="view" id="view-fixtures">
+    <div class="section-head" style="margin-top:16px"><h2>Fixtures</h2></div>
+    <div class="chip-row" id="fixtureLeagueChips"></div>
+    <div class="chip-row" id="fixtureStatusChips">
+      <button class="chip active" data-status="all">All</button>
+      <button class="chip" data-status="upcoming">Upcoming</button>
+      <button class="chip" data-status="live">Live</button>
+      <button class="chip" data-status="finished">Finished</button>
+    </div>
+    <div id="fixturesList" style="margin-top:12px"></div>
+  </section>
+
+  <!-- PREDICTIONS -->
+  <section class="view" id="view-predictions">
+    <div class="section-head" style="margin-top:16px"><h2>Predictions</h2></div>
+    <div class="chip-row" id="predLeagueChips"></div>
+    <div id="predictionsList" style="margin-top:12px"></div>
+  </section>
+
+  <!-- PICKS -->
+  <section class="view" id="view-picks">
+    <div class="section-head" style="margin-top:16px"><h2>🔥 Daily special picks</h2></div>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:-4px">The highest-confidence predictions from today's fixtures, ranked automatically.</p>
+    <div id="picksList" style="margin-top:12px"></div>
+  </section>
+
+  <!-- MORE -->
+  <section class="view" id="view-more">
+    <div class="section-head" style="margin-top:16px"><h2>More</h2></div>
+    <div class="list-row" data-open="teams"><div><div class="title">⚽ Teams &amp; Table</div><div class="sub">Manage teams, stats and standings</div></div><div class="chev">›</div></div>
+    <div class="list-row" data-open="leagues"><div><div class="title">🏆 Leagues</div><div class="sub">Group teams &amp; fixtures by competition</div></div><div class="chev">›</div></div>
+    <div class="list-row" data-open="backup"><div><div class="title">💾 Backup &amp; Restore</div><div class="sub">Export or import your data as a file</div></div><div class="chev">›</div></div>
+    <div class="list-row" data-open="settings"><div><div class="title">⚙️ Settings</div><div class="sub">Name, home advantage, reset data</div></div><div class="chev">›</div></div>
+    <div class="list-row" data-open="about"><div><div class="title">ℹ️ About PredictPro</div><div class="sub">How the prediction engine works</div></div><div class="chev">›</div></div>
+  </section>
+
+</main>
+
+<button class="fab" id="fab">+</button>
+
+<nav class="bottom">
+  <button class="active" data-nav="home"><span class="nico">🏠</span>Home</button>
+  <button data-nav="fixtures"><span class="nico">📅</span>Fixtures</button>
+  <button data-nav="predictions"><span class="nico">📊</span>Predict</button>
+  <button data-nav="picks"><span class="nico">🔥</span>Picks</button>
+  <button data-nav="more"><span class="nico">☰</span>More</button>
+</nav>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- Fixture detail sheet -->
+<div class="sheet" id="sheetFixture">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><h3 id="fdTitle">Fixture</h3><button class="sheet-close" data-close>✕</button></div>
+  <div class="sheet-body" id="fdBody"></div>
+</div>
+
+<!-- Add/Edit Fixture sheet -->
+<div class="sheet" id="sheetFixtureForm">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><h3 id="ffTitle">Add Fixture</h3><button class="sheet-close" data-close>✕</button></div>
+  <div class="sheet-body">
+    <input type="hidden" id="ffId">
+    <label class="f-label">League</label>
+    <input class="f-input" id="ffLeague" list="leagueOptions" placeholder="e.g. Premier Division">
+    <datalist id="leagueOptions"></datalist>
+    <div class="f-row2">
+      <div><label class="f-label">Home team</label><select class="f-input" id="ffHome"></select></div>
+      <div><label class="f-label">Away team</label><select class="f-input" id="ffAway"></select></div>
+    </div>
+    <label class="f-label">Kick-off date &amp; time</label>
+    <input class="f-input" type="datetime-local" id="ffDate">
+    <label class="f-label">Status</label>
+    <select class="f-input" id="ffStatus">
+      <option value="upcoming">Upcoming</option>
+      <option value="live">Live</option>
+      <option value="finished">Finished</option>
+    </select>
+    <div class="f-row2" id="ffScoreRow" style="display:none">
+      <div><label class="f-label">Home score</label><input class="f-input" type="number" min="0" id="ffHomeScore"></div>
+      <div><label class="f-label">Away score</label><input class="f-input" type="number" min="0" id="ffAwayScore"></div>
+    </div>
+    <div class="section-head" style="margin:16px 0 4px"><h2 style="font-size:13px">Odds (decimal)</h2></div>
+    <div class="f-row3">
+      <div><label class="f-label">Home</label><input class="f-input" type="number" step="0.01" id="ffOddsHome"></div>
+      <div><label class="f-label">Draw</label><input class="f-input" type="number" step="0.01" id="ffOddsDraw"></div>
+      <div><label class="f-label">Away</label><input class="f-input" type="number" step="0.01" id="ffOddsAway"></div>
+    </div>
+    <div class="f-row2" style="margin-top:10px">
+      <div><label class="f-label">Over 2.5</label><input class="f-input" type="number" step="0.01" id="ffOddsOver"></div>
+      <div><label class="f-label">Under 2.5</label><input class="f-input" type="number" step="0.01" id="ffOddsUnder"></div>
+    </div>
+    <div class="f-row2" style="margin-top:10px">
+      <div><label class="f-label">BTTS Yes</label><input class="f-input" type="number" step="0.01" id="ffOddsBttsY"></div>
+      <div><label class="f-label">BTTS No</label><input class="f-input" type="number" step="0.01" id="ffOddsBttsN"></div>
+    </div>
+    <button class="btn btn-primary" id="ffSave">Save fixture</button>
+    <button class="btn btn-danger" id="ffDelete" style="display:none">Delete fixture</button>
+  </div>
+</div>
+
+<!-- Team form sheet -->
+<div class="sheet" id="sheetTeam">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><h3 id="tfTitle">Add Team</h3><button class="sheet-close" data-close>✕</button></div>
+  <div class="sheet-body">
+    <input type="hidden" id="tfId">
+    <label class="f-label">Team name</label>
+    <input class="f-input" id="tfName" placeholder="e.g. Riverside United">
+    <label class="f-label">League</label>
+    <input class="f-input" id="tfLeague" list="leagueOptions" placeholder="e.g. Premier Division">
+    <label class="f-label">Recent form (most recent last, e.g. LDWWW)</label>
+    <input class="f-input" id="tfForm" placeholder="LDWWW" maxlength="8">
+    <div class="f-row3">
+      <div><label class="f-label">Played</label><input class="f-input" type="number" min="0" id="tfPlayed"></div>
+      <div><label class="f-label">Won</label><input class="f-input" type="number" min="0" id="tfWon"></div>
+      <div><label class="f-label">Drawn</label><input class="f-input" type="number" min="0" id="tfDrawn"></div>
+    </div>
+    <div class="f-row3" style="margin-top:10px">
+      <div><label class="f-label">Lost</label><input class="f-input" type="number" min="0" id="tfLost"></div>
+      <div><label class="f-label">Goals for</label><input class="f-input" type="number" min="0" id="tfGf"></div>
+      <div><label class="f-label">Goals against</label><input class="f-input" type="number" min="0" id="tfGa"></div>
+    </div>
+    <button class="btn btn-primary" id="tfSave">Save team</button>
+    <button class="btn btn-danger" id="tfDelete" style="display:none">Delete team</button>
+  </div>
+</div>
+
+<!-- Teams list sheet -->
+<div class="sheet" id="sheetTeamsList">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><h3>Teams &amp; Table</h3><button class="sheet-close" data-close>✕</button></div>
+  <div class="sheet-body">
+    <div class="chip-row" id="teamsLeagueChips"></div>
+    <div id="standingsTable" style="margin-top:10px"></div>
+    <button class="btn btn-primary" id="addTeamBtn">+ Add team</button>
+    <div id="teamsListRows" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<!-- Leagues sheet -->
+<div class="sheet" id="sheetLeagues">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><h3>Leagues</h3><button class="sheet-close" data-close>✕</button></div>
+  <div class="sheet-body" id="leaguesBody"></div>
+</div>
+
+<!-- Backup sheet -->
+<div class="sheet" id="sheetBackup">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><h3>Backup &amp; Restore</h3><button class="sheet-close" data-close>✕</button></div>
+  <div class="sheet-body">
+    <p style="font-size:12.5px;color:var(--ink-soft)">PredictPro stores everything on this device. Export a backup file before clearing your browser data, or to move data to another phone.</p>
+    <button class="btn btn-primary" id="exportBtn">⬇️ Export backup (.json)</button>
+    <label class="f-label">Restore from file</label>
+    <input class="f-input" type="file" id="importFile" accept=".json">
+  </div>
+</div>
+
+<!-- Settings sheet -->
+<div class="sheet" id="sheetSettings">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><h3>Settings</h3><button class="sheet-close" data-close>✕</button></div>
+  <div class="sheet-body">
+    <label class="f-label">Your name</label>
+    <input class="f-input" id="setName" placeholder="e.g. Alex">
+    <label class="f-label">Home advantage boost</label>
+    <select class="f-input" id="setHomeAdv">
+      <option value="4">Low</option>
+      <option value="8">Standard</option>
+      <option value="12">High</option>
+    </select>
+    <button class="btn btn-primary" id="setSave">Save settings</button>
+    <button class="btn btn-danger" id="resetAllBtn">Reset all data</button>
+  </div>
+</div>
+
+<!-- About sheet -->
+<div class="sheet" id="sheetAbout">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><h3>How predictions work</h3><button class="sheet-close" data-close>✕</button></div>
+  <div class="sheet-body">
+    <p style="font-size:13px;line-height:1.6">PredictPro's engine looks at each team's league table record — points per game, goal difference and recent form — to estimate a strength rating. The two ratings in a fixture (with a small home-advantage boost) are compared to produce win/draw/win probabilities, a likely scoreline, and Over/Under &amp; BTTS leanings.</p>
+    <p style="font-size:13px;line-height:1.6">Confidence is simply how far apart the two teams' chances are — a bigger gap means a more one-sided prediction. Daily special picks are just today's fixtures with the highest confidence.</p>
+    <p style="font-size:12px;color:var(--ink-soft);line-height:1.6">This is a statistical estimate based on the data you enter, not a certainty. Keep team stats up to date for better predictions. Please gamble responsibly — 18+ only where applicable.</p>
+  </div>
+</div>
+
+<!-- Search sheet -->
+<div class="sheet" id="sheetSearch">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><h3>Search</h3><button class="sheet-close" data-close>✕</button></div>
+  <div class="sheet-body">
+    <input class="f-input" id="searchInput" placeholder="Search teams or fixtures…">
+    <div id="searchResults" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- Notifications sheet -->
+<div class="sheet" id="sheetNotif">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><h3>Notifications</h3><button class="sheet-close" data-close>✕</button></div>
+  <div class="sheet-body" id="notifBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ DATA LAYER ============ */
+const LS = {
+  teams: 'fbp_teams_v1',
+  fixtures: 'fbp_fixtures_v1',
+  settings: 'fbp_settings_v1',
+  seeded: 'fbp_seeded_v1'
+};
+function load(key, fallback){ try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; } }
+function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+let teams = load(LS.teams, []);
+let fixtures = load(LS.fixtures, []);
+let settings = load(LS.settings, { name: '', homeAdv: 8 });
+
+function seedIfEmpty(){
+  if (load(LS.seeded, false)) return;
+  save(LS.seeded, true);
+  if (teams.length || fixtures.length) return;
+  const league = 'Demo League';
+  const demo = [
+    ['Riverside United', 10,7,2,1, 21,9, 'WWWDW'],
+    ['Northgate FC', 10,6,2,2, 18,11,'WLWWD'],
+    ['Ashford Town', 10,5,3,2, 16,12,'DWWLD'],
+    ['Harbor City', 10,4,4,2, 15,13,'WDDWL'],
+    ['Kingsley Rovers', 10,4,3,3, 14,14,'LWDWD'],
+    ['Millfield Athletic', 10,3,3,4, 12,15,'LDWLD'],
+    ['Sutton Vale', 10,3,2,5, 11,17,'LLDWL'],
+    ['Oakwood Rangers', 10,2,3,5, 10,18,'DLLWL'],
+  ];
+  teams = demo.map(d => ({ id: uid(), name:d[0], league, played:d[1], won:d[2], drawn:d[3], lost:d[4], gf:d[5], ga:d[6], form:d[7] }));
+  save(LS.teams, teams);
+  const today = new Date();
+  function atHour(daysFromNow, hour){ const d = new Date(today); d.setDate(d.getDate()+daysFromNow); d.setHours(hour,0,0,0); return d.toISOString().slice(0,16); }
+  const t = teams;
+  fixtures = [
+    { id: uid(), league, homeId: t[0].id, awayId: t[3].id, date: atHour(0,15), status:'upcoming', homeScore:null, awayScore:null, odds:{home:1.65,draw:3.8,away:5.2,over25:1.75,under25:2.05,bttsY:1.9,bttsN:1.9} },
+    { id: uid(), league, homeId: t[1].id, awayId: t[4].id, date: atHour(0,17), status:'upcoming', homeScore:null, awayScore:null, odds:{home:1.9,draw:3.4,away:4.0,over25:1.85,under25:1.95,bttsY:1.8,bttsN:2.0} },
+    { id: uid(), league, homeId: t[2].id, awayId: t[5].id, date: atHour(0,19), status:'upcoming', homeScore:null, awayScore:null, odds:{home:1.7,draw:3.6,away:4.8,over25:1.95,under25:1.85,bttsY:2.0,bttsN:1.75} },
+    { id: uid(), league, homeId: t[6].id, awayId: t[7].id, date: atHour(1,15), status:'upcoming', homeScore:null, awayScore:null, odds:{home:2.4,draw:3.2,away:2.9,over25:2.1,under25:1.7,bttsY:2.1,bttsN:1.7} },
+    { id: uid(), league, homeId: t[3].id, awayId: t[0].id, date: atHour(-3,15), status:'finished', homeScore:1, awayScore:2, odds:{home:2.8,draw:3.3,away:2.5,over25:1.9,under25:1.9,bttsY:1.85,bttsN:1.95} },
+  ];
+  save(LS.fixtures, fixtures);
+}
+seedIfEmpty();
+
+function teamById(id){ return teams.find(t => t.id === id); }
+function leaguesList(){ return [...new Set(teams.map(t => t.league).filter(Boolean))]; }
+
+/* ============ PREDICTION ENGINE ============ */
+function strength(team){
+  if (!team || !team.played) return 0;
+  const ppg = (team.won*3 + team.drawn) / team.played;
+  const gdpg = (team.gf - team.ga) / team.played;
+  const form = (team.form||'').slice(-5).split('').reduce((s,c,i,arr)=>{
+    const w = 1 + i*0.15; // recent games weigh slightly more
+    const pts = c==='W'?3:(c==='D'?1:0);
+    return s + pts*w;
+  }, 0) / Math.max(1, (team.form||'').slice(-5).length);
+  return ppg*10 + gdpg*3 + form*3;
+}
+
+function predictFixture(fx){
+  const home = teamById(fx.homeId), away = teamById(fx.awayId);
+  if (!home || !away) return null;
+  const hs = strength(home) + (Number(settings.homeAdv)||8);
+  const as_ = strength(away);
+  const diff = hs - as_;
+  const drawFactor = Math.max(6, 20 - Math.min(16, Math.abs(diff)*1.4));
+  const rawHome = Math.exp(hs/14);
+  const rawAway = Math.exp(as_/14);
+  const rawDraw = Math.exp((hs+as_)/28) * (drawFactor/16);
+  const sum = rawHome + rawAway + rawDraw;
+  let pHome = rawHome/sum*100, pDraw = rawDraw/sum*100, pAway = rawAway/sum*100;
+  // round nicely, fix rounding drift
+  pHome = Math.round(pHome); pAway = Math.round(pAway); pDraw = Math.round(100-pHome-pAway);
+  const hp = home.played||1, ap = away.played||1;
+  const homeAttack = home.gf/hp, homeDefWeak = away.ga/ap;
+  const awayAttack = away.gf/ap, awayDefWeak = home.ga/hp;
+  let xgHome = Math.max(0.3, homeAttack*0.55 + homeDefWeak*0.45 + 0.15);
+  let xgAway = Math.max(0.2, awayAttack*0.55 + awayDefWeak*0.45);
+  const predHomeGoals = Math.max(0, Math.round(xgHome));
+  const predAwayGoals = Math.max(0, Math.round(xgAway));
+  const totalXg = xgHome + xgAway;
+  const outcome = pHome >= pDraw && pHome >= pAway ? 'home' : (pAway >= pDraw ? 'away' : 'draw');
+  const confidence = Math.max(pHome, pDraw, pAway);
+  const overUnder = totalXg > 2.5 ? 'Over 2.5' : 'Under 2.5';
+  const ouConfidence = Math.min(90, Math.round(50 + Math.abs(totalXg-2.5)*22));
+  const btts = (xgHome > 0.85 && xgAway > 0.85) ? 'Yes' : 'No';
+  return { home, away, pHome, pDraw, pAway, outcome, confidence, predHomeGoals, predAwayGoals, overUnder, ouConfidence, btts, totalXg };
+}
+
+function outcomeLabel(p, homeName, awayName){
+  if (p.outcome === 'home') return homeName + ' to win';
+  if (p.outcome === 'away') return awayName + ' to win';
+  return 'Draw';
+}
+
+/* ============ NAVIGATION ============ */
+const views = ['home','fixtures','predictions','picks','more'];
+function goto(view){
+  views.forEach(v => document.getElementById('view-'+v).classList.toggle('active', v===view));
+  document.querySelectorAll('nav.bottom button').forEach(b => b.classList.toggle('active', b.dataset.nav===view));
+  document.getElementById('fab').style.display = (view==='fixtures') ? 'flex' : (view==='picks'||view==='predictions'||view==='more' ? 'none' : 'none');
+  if (view==='fixtures') renderFixturesView();
+  if (view==='predictions') renderPredictionsView();
+  if (view==='picks') renderPicksView();
+  if (view==='home') renderHome();
+}
+document.querySelectorAll('[data-nav]').forEach(el => el.addEventListener('click', () => goto(el.dataset.nav)));
+
+/* ============ SHEETS ============ */
+const overlay = document.getElementById('overlay');
+function openSheet(id){
+  overlay.classList.add('show');
+  document.getElementById(id).classList.add('show');
+}
+function closeSheets(){
+  overlay.classList.remove('show');
+  document.querySelectorAll('.sheet').forEach(s => s.classList.remove('show'));
+}
+overlay.addEventListener('click', closeSheets);
+document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeSheets));
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+/* ============ RENDER: HOME ============ */
+function greeting(){
+  const h = new Date().getHours();
+  const who = settings.name ? ', ' + settings.name : '';
+  if (h < 12) return 'Good morning' + who + ' 👋';
+  if (h < 18) return 'Good afternoon' + who + ' 👋';
+  return 'Good evening' + who + ' 👋';
+}
+function isToday(dateStr){
+  const d = new Date(dateStr), t = new Date();
+  return d.getFullYear()===t.getFullYear() && d.getMonth()===t.getMonth() && d.getDate()===t.getDate();
+}
+function fmtTime(dateStr){ const d = new Date(dateStr); return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+function fmtDate(dateStr){ const d = new Date(dateStr); return d.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short'}); }
+
+function computeAccuracy(){
+  const finished = fixtures.filter(f => f.status==='finished' && f.homeScore!=null);
+  if (!finished.length) return null;
+  let hits = 0;
+  finished.forEach(f => {
+    const p = predictFixture(f);
+    if (!p) return;
+    let actual = f.homeScore > f.awayScore ? 'home' : (f.homeScore < f.awayScore ? 'away' : 'draw');
+    if (actual === p.outcome) hits++;
+  });
+  return Math.round(hits/finished.length*100);
+}
+
+function todaysFixtures(){ return fixtures.filter(f => isToday(f.date)).sort((a,b)=> new Date(a.date)-new Date(b.date)); }
+
+function dailyPicks(limit){
+  const list = todaysFixtures().filter(f=>f.status!=='finished').map(f => ({ fx: f, p: predictFixture(f) })).filter(x=>x.p);
+  list.sort((a,b) => b.p.confidence - a.p.confidence);
+  return limit ? list.slice(0, limit) : list;
+}
+
+function fixtureCardHtml(f, opts){
+  opts = opts || {};
+  const home = teamById(f.homeId), away = teamById(f.awayId);
+  if (!home || !away) return '';
+  const p = predictFixture(f);
+  let scoreHtml = f.status==='finished'
+    ? `<div class="fixture-score">${f.homeScore} - ${f.awayScore}</div>`
+    : `<div class="fixture-vs">${f.status==='live' ? 'LIVE' : fmtTime(f.date)}</div>`;
+  const statusPill = f.status==='live' ? '<span class="pill pill-red">● LIVE</span>' : (f.status==='finished' ? '<span class="pill pill-soft">FT</span>' : '<span class="pill pill-blue">'+fmtDate(f.date)+'</span>');
+  let oddsHtml = '';
+  if (f.odds && !opts.hideOdds) {
+    oddsHtml = `<div class="odds-mini">
+      <div class="odds-chip"><span class="k">1</span><span class="v">${f.odds.home?.toFixed(2)||'-'}</span></div>
+      <div class="odds-chip"><span class="k">X</span><span class="v">${f.odds.draw?.toFixed(2)||'-'}</span></div>
+      <div class="odds-chip"><span class="k">2</span><span class="v">${f.odds.away?.toFixed(2)||'-'}</span></div>
+    </div>`;
+  }
+  let predictHtml = '';
+  if (p && f.status !== 'finished') {
+    predictHtml = `<div class="predict-strip"><span class="pct">${p.confidence}%</span><span class="txt">${outcomeLabel(p, home.name, away.name)} · predicted ${p.predHomeGoals}-${p.predAwayGoals}</span></div>`;
+  }
+  return `<div class="fixture-card" data-fixture="${f.id}">
+    <div class="fixture-top"><span class="fixture-league">${f.league||''}</span>${statusPill}</div>
+    <div class="fixture-teams">
+      <div class="team-name">${home.name}</div>
+      ${scoreHtml}
+      <div class="team-name away">${away.name}</div>
+    </div>
+    <div class="fixture-meta-row">${oddsHtml}<span style="flex:1"></span></div>
+    ${predictHtml}
+  </div>`;
+}
+
+function renderHome(){
+  document.getElementById('greetText').textContent = greeting();
+  const tf = todaysFixtures();
+  document.getElementById('greetSub').textContent = tf.length ? `${tf.length} fixture${tf.length>1?'s':''} on today's card` : 'No fixtures scheduled for today';
+  document.getElementById('statFixturesToday').textContent = tf.length;
+  document.getElementById('statPredictions').textContent = fixtures.filter(f=>f.status!=='finished').length;
+  const acc = computeAccuracy();
+  document.getElementById('statAccuracy').textContent = acc==null ? '—' : acc+'%';
+
+  const top = dailyPicks(1)[0];
+  const heroEl = document.getElementById('homePickHero');
+  if (top) {
+    const p = top.p;
+    heroEl.innerHTML = `<div class="pick-hero" data-fixture="${top.fx.id}">
+      <div class="pick-hero-head"><span class="tag">🔥 TOP PICK OF THE DAY</span><span class="conf-badge">${p.confidence}% confidence</span></div>
+      <div style="font-size:15px;font-weight:800">${p.home.name} vs ${p.away.name}</div>
+      <div style="font-size:12.5px;color:var(--ink-soft);margin-top:4px">${outcomeLabel(p, p.home.name, p.away.name)} · Predicted score ${p.predHomeGoals}-${p.predAwayGoals} · ${p.overUnder}</div>
+    </div>`;
+  } else {
+    heroEl.innerHTML = '';
+  }
+
+  const fEl = document.getElementById('homeFixtures');
+  const homeList = tf.slice(0,3);
+  fEl.innerHTML = homeList.length ? homeList.map(f=>fixtureCardHtml(f)).join('') : emptyHtml('📅','No fixtures today','Add a fixture to get started, or check the Fixtures tab.');
+
+  const pEl = document.getElementById('homePicks');
+  const picks = dailyPicks(3);
+  pEl.innerHTML = picks.length ? picks.map((x,i)=>pickRowHtml(x,i)).join('') : emptyHtml('🔥','No picks yet','Picks appear once today has fixtures with team stats filled in.');
+
+  bindFixtureClicks();
+  bindPickClicks();
+  refreshNotifBadge();
+}
+
+function emptyHtml(icon, title, sub){
+  return `<div class="empty"><div class="e-icon">${icon}</div><div class="e-title">${title}</div><div class="e-sub">${sub}</div></div>`;
+}
+
+function pickRowHtml(x, i){
+  const p = x.p;
+  return `<div class="pick-list-item" data-fixture="${x.fx.id}">
+    <div class="pick-rank">${i+1}</div>
+    <div class="pick-body">
+      <div class="pmatch">${p.home.name} vs ${p.away.name}</div>
+      <div class="pdetail">${outcomeLabel(p, p.home.name, p.away.name)} · ${p.predHomeGoals}-${p.predAwayGoals} · ${p.overUnder}</div>
+    </div>
+    <div class="conf-badge" style="background:var(--gold-tint);color:var(--gold);font-size:12px;font-weight:800;padding:5px 10px;border-radius:20px">${p.confidence}%</div>
+  </div>`;
+}
+
+function bindFixtureClicks(){
+  document.querySelectorAll('[data-fixture]').forEach(el => {
+    el.onclick = () => openFixtureDetail(el.dataset.fixture);
+  });
+}
+function bindPickClicks(){ /* covered by data-fixture binding above */ }
+
+/* ============ RENDER: FIXTURES ============ */
+let fixtureLeagueFilter = 'all', fixtureStatusFilter = 'all';
+function renderLeagueChips(containerId, filterVar, onPick){
+  const el = document.getElementById(containerId);
+  const ls = leaguesList();
+  let html = `<button class="chip ${filterVar==='all'?'active':''}" data-league="all">All leagues</button>`;
+  html += ls.map(l => `<button class="chip ${filterVar===l?'active':''}" data-league="${l}">${l}</button>`).join('');
+  el.innerHTML = html;
+  el.querySelectorAll('[data-league]').forEach(b => b.onclick = () => onPick(b.dataset.league));
+}
+
+function renderFixturesView(){
+  renderLeagueChips('fixtureLeagueChips', fixtureLeagueFilter, (l) => { fixtureLeagueFilter = l; renderFixturesView(); });
+  document.querySelectorAll('#fixtureStatusChips [data-status]').forEach(b => {
+    b.classList.toggle('active', b.dataset.status===fixtureStatusFilter);
+    b.onclick = () => { fixtureStatusFilter = b.dataset.status; renderFixturesView(); };
+  });
+  let list = [...fixtures].sort((a,b)=> new Date(a.date)-new Date(b.date));
+  if (fixtureLeagueFilter !== 'all') list = list.filter(f => f.league === fixtureLeagueFilter);
+  if (fixtureStatusFilter !== 'all') list = list.filter(f => f.status === fixtureStatusFilter);
+  const el = document.getElementById('fixturesList');
+  el.innerHTML = list.length ? list.map(f=>fixtureCardHtml(f)).join('') : emptyHtml('📅','No fixtures found','Tap the + button to add a fixture.');
+  bindFixtureClicks();
+}
+
+/* ============ RENDER: PREDICTIONS ============ */
+let predLeagueFilter = 'all';
+function renderPredictionsView(){
+  renderLeagueChips('predLeagueChips', predLeagueFilter, (l) => { predLeagueFilter = l; renderPredictionsView(); });
+  let list = fixtures.filter(f => f.status !== 'finished');
+  if (predLeagueFilter !== 'all') list = list.filter(f => f.league === predLeagueFilter);
+  list.sort((a,b)=> new Date(a.date)-new Date(b.date));
+  const el = document.getElementById('predictionsList');
+  el.innerHTML = list.length ? list.map(f=>fixtureCardHtml(f)).join('') : emptyHtml('📊','No predictions yet','Add teams with stats and fixtures to see predictions.');
+  bindFixtureClicks();
+}
+
+/* ============ RENDER: PICKS ============ */
+function renderPicksView(){
+  const picks = dailyPicks();
+  const el = document.getElementById('picksList');
+  el.innerHTML = picks.length ? picks.map((x,i)=>pickRowHtml(x,i)).join('') : emptyHtml('🔥','No picks for today','Picks are generated from today\'s fixtures once teams have stats filled in.');
+  bindFixtureClicks();
+}
+
+/* ============ FIXTURE DETAIL ============ */
+function openFixtureDetail(id){
+  const f = fixtures.find(x=>x.id===id);
+  if (!f) return;
+  const home = teamById(f.homeId), away = teamById(f.awayId);
+  document.getElementById('fdTitle').textContent = home.name + ' vs ' + away.name;
+  const p = predictFixture(f);
+  let html = `<div style="text-align:center;margin-bottom:6px">
+      <span class="pill pill-blue">${f.league||''}</span>
+      <span class="pill pill-soft">${fmtDate(f.date)} · ${fmtTime(f.date)}</span>
+    </div>`;
+  if (f.status==='finished') {
+    html += `<div style="text-align:center;font-size:28px;font-weight:800;margin:14px 0">${f.homeScore} - ${f.awayScore}</div>`;
+  }
+  if (p) {
+    html += `<div class="card">
+      <div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:6px">Win probability</div>
+      <div class="breakdown-bar">
+        <div class="bd-seg" style="width:${p.pHome}%;background:var(--brand)"></div>
+        <div class="bd-seg" style="width:${p.pDraw}%;background:var(--ink-soft)"></div>
+        <div class="bd-seg" style="width:${p.pAway}%;background:var(--blue)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;margin-top:6px;color:var(--ink-soft)">
+        <span>${home.name} ${p.pHome}%</span><span>Draw ${p.pDraw}%</span><span>${away.name} ${p.pAway}%</span>
+      </div>
+      <div class="predict-strip" style="margin-top:12px"><span class="pct">${p.confidence}%</span><span class="txt">${outcomeLabel(p, home.name, away.name)} · predicted score ${p.predHomeGoals}-${p.predAwayGoals}</span></div>
+    </div>
+    <div class="card">
+      <div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:8px">More markets</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
+        <span style="font-size:13px">Over/Under 2.5 goals</span>
+        <span class="pill pill-green">${p.overUnder} · ${p.ouConfidence}%</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
+        <span style="font-size:13px">Both teams to score</span>
+        <span class="pill pill-purple">${p.btts}</span>
+      </div>
+    </div>`;
+  }
+  if (f.odds) {
+    const best = Math.min(f.odds.home||99, f.odds.draw||99, f.odds.away||99);
+    html += `<div class="card"><div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:4px">Match odds (1X2)</div>
+      <div class="odds-grid">
+        <div class="odds-box ${f.odds.home===best?'best':''}"><div class="k">${home.name}</div><div class="v">${f.odds.home?.toFixed(2)||'-'}</div></div>
+        <div class="odds-box ${f.odds.draw===best?'best':''}"><div class="k">Draw</div><div class="v">${f.odds.draw?.toFixed(2)||'-'}</div></div>
+        <div class="odds-box ${f.odds.away===best?'best':''}"><div class="k">${away.name}</div><div class="v">${f.odds.away?.toFixed(2)||'-'}</div></div>
+      </div>
+      <div class="odds-grid" style="grid-template-columns:repeat(2,1fr)">
+        <div class="odds-box"><div class="k">Over 2.5</div><div class="v">${f.odds.over25?.toFixed(2)||'-'}</div></div>
+        <div class="odds-box"><div class="k">Under 2.5</div><div class="v">${f.odds.under25?.toFixed(2)||'-'}</div></div>
+      </div>
+      <div class="odds-grid" style="grid-template-columns:repeat(2,1fr);margin-top:8px">
+        <div class="odds-box"><div class="k">BTTS Yes</div><div class="v">${f.odds.bttsY?.toFixed(2)||'-'}</div></div>
+        <div class="odds-box"><div class="k">BTTS No</div><div class="v">${f.odds.bttsN?.toFixed(2)||'-'}</div></div>
+      </div>
+    </div>`;
+  }
+  html += `<button class="btn btn-soft" data-edit-fixture="${f.id}">Edit fixture</button>`;
+  document.getElementById('fdBody').innerHTML = html;
+  document.querySelector('[data-edit-fixture]')?.addEventListener('click', () => { closeSheets(); setTimeout(()=>openFixtureForm(f.id),150); });
+  openSheet('sheetFixture');
+}
+
+/* ============ FIXTURE FORM ============ */
+function populateTeamSelects(){
+  const opts = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+  document.getElementById('ffHome').innerHTML = opts;
+  document.getElementById('ffAway').innerHTML = opts;
+}
+function populateLeagueOptions(){
+  document.getElementById('leagueOptions').innerHTML = leaguesList().map(l=>`<option value="${l}">`).join('');
+}
+document.getElementById('ffStatus').addEventListener('change', (e) => {
+  document.getElementById('ffScoreRow').style.display = e.target.value==='finished' ? 'grid' : 'none';
+});
+function openFixtureForm(id){
+  populateTeamSelects(); populateLeagueOptions();
+  const f = id ? fixtures.find(x=>x.id===id) : null;
+  document.getElementById('ffTitle').textContent = f ? 'Edit Fixture' : 'Add Fixture';
+  document.getElementById('ffId').value = f ? f.id : '';
+  document.getElementById('ffLeague').value = f ? f.league : (leaguesList()[0]||'');
+  document.getElementById('ffHome').value = f ? f.homeId : (teams[0]?.id||'');
+  document.getElementById('ffAway').value = f ? f.awayId : (teams[1]?.id||'');
+  document.getElementById('ffDate').value = f ? f.date : new Date().toISOString().slice(0,16);
+  document.getElementById('ffStatus').value = f ? f.status : 'upcoming';
+  document.getElementById('ffScoreRow').style.display = (f && f.status==='finished') ? 'grid' : 'none';
+  document.getElementById('ffHomeScore').value = f && f.homeScore!=null ? f.homeScore : '';
+  document.getElementById('ffAwayScore').value = f && f.awayScore!=null ? f.awayScore : '';
+  const o = f?.odds || {};
+  document.getElementById('ffOddsHome').value = o.home||'';
+  document.getElementById('ffOddsDraw').value = o.draw||'';
+  document.getElementById('ffOddsAway').value = o.away||'';
+  document.getElementById('ffOddsOver').value = o.over25||'';
+  document.getElementById('ffOddsUnder').value = o.under25||'';
+  document.getElementById('ffOddsBttsY').value = o.bttsY||'';
+  document.getElementById('ffOddsBttsN').value = o.bttsN||'';
+  document.getElementById('ffDelete').style.display = f ? 'block' : 'none';
+  openSheet('sheetFixtureForm');
+}
+document.getElementById('ffSave').addEventListener('click', () => {
+  const id = document.getElementById('ffId').value || uid();
+  const homeId = document.getElementById('ffHome').value, awayId = document.getElementById('ffAway').value;
+  if (homeId === awayId) { toast('Home and away team must differ'); return; }
+  const status = document.getElementById('ffStatus').value;
+  const fx = {
+    id, league: document.getElementById('ffLeague').value.trim() || 'General',
+    homeId, awayId,
+    date: document.getElementById('ffDate').value,
+    status,
+    homeScore: status==='finished' ? Number(document.getElementById('ffHomeScore').value||0) : null,
+    awayScore: status==='finished' ? Number(document.getElementById('ffAwayScore').value||0) : null,
+    odds: {
+      home: Number(document.getElementById('ffOddsHome').value)||null,
+      draw: Number(document.getElementById('ffOddsDraw').value)||null,
+      away: Number(document.getElementById('ffOddsAway').value)||null,
+      over25: Number(document.getElementById('ffOddsOver').value)||null,
+      under25: Number(document.getElementById('ffOddsUnder').value)||null,
+      bttsY: Number(document.getElementById('ffOddsBttsY').value)||null,
+      bttsN: Number(document.getElementById('ffOddsBttsN').value)||null,
+    }
+  };
+  const idx = fixtures.findIndex(x=>x.id===id);
+  if (idx>=0) fixtures[idx]=fx; else fixtures.push(fx);
+  save(LS.fixtures, fixtures);
+  closeSheets(); toast('Fixture saved'); refreshAll();
+});
+document.getElementById('ffDelete').addEventListener('click', () => {
+  const id = document.getElementById('ffId').value;
+  fixtures = fixtures.filter(x=>x.id!==id);
+  save(LS.fixtures, fixtures);
+  closeSheets(); toast('Fixture deleted'); refreshAll();
+});
+document.getElementById('fab').addEventListener('click', () => openFixtureForm(null));
+
+/* ============ TEAMS & TABLE ============ */
+let teamsLeagueFilter = 'all';
+function renderStandings(league){
+  let list = teams.filter(t => league==='all' || t.league===league);
+  list = [...list].sort((a,b) => {
+    const pa = a.won*3+a.drawn, pb = b.won*3+b.drawn;
+    if (pb!==pa) return pb-pa;
+    return (b.gf-b.ga)-(a.gf-a.ga);
+  });
+  if (!list.length) return emptyHtml('🏆','No teams yet','Add teams to build the league table.');
+  let rows = list.map((t,i) => {
+    const pts = t.won*3+t.drawn;
+    const gd = t.gf-t.ga;
+    const dots = (t.form||'').slice(-5).split('').map(c => {
+      const color = c==='W'?'var(--brand)':(c==='D'?'var(--ink-soft)':'var(--red)');
+      return `<span class="form-dot" style="background:${color}">${c}</span>`;
+    }).join('');
+    return `<tr data-team="${t.id}">
+      <td><span class="pos-badge">${i+1}</span>${t.name}</td>
+      <td class="num">${t.played}</td>
+      <td class="num">${pts}</td>
+      <td class="num">${gd>0?'+':''}${gd}</td>
+      <td><div class="form-dots">${dots}</div></td>
+    </tr>`;
+  }).join('');
+  return `<table class="standings"><thead><tr><th>Team</th><th class="num">P</th><th class="num">Pts</th><th class="num">GD</th><th>Form</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function renderTeamsSheet(){
+  renderLeagueChips('teamsLeagueChips', teamsLeagueFilter, (l) => { teamsLeagueFilter = l; renderTeamsSheet(); });
+  document.getElementById('standingsTable').innerHTML = renderStandings(teamsLeagueFilter);
+  document.querySelectorAll('#standingsTable [data-team]').forEach(r => r.onclick = () => openTeamForm(r.dataset.team));
+  const list = teams.filter(t => teamsLeagueFilter==='all' || t.league===teamsLeagueFilter);
+  document.getElementById('teamsListRows').innerHTML = list.map(t => `<div class="list-row" data-team-edit="${t.id}">
+      <div><div class="title">${t.name}</div><div class="sub">${t.league} · ${t.played} played</div></div><div class="chev">›</div>
+    </div>`).join('');
+  document.querySelectorAll('[data-team-edit]').forEach(r => r.onclick = () => openTeamForm(r.dataset.teamEdit));
+}
+document.getElementById('addTeamBtn').addEventListener('click', () => openTeamForm(null));
+function openTeamForm(id){
+  const t = id ? teamById(id) : null;
+  document.getElementById('tfTitle').textContent = t ? 'Edit Team' : 'Add Team';
+  document.getElementById('tfId').value = t ? t.id : '';
+  document.getElementById('tfName').value = t ? t.name : '';
+  document.getElementById('tfLeague').value = t ? t.league : (leaguesList()[0]||'');
+  document.getElementById('tfForm').value = t ? t.form : '';
+  document.getElementById('tfPlayed').value = t ? t.played : 0;
+  document.getElementById('tfWon').value = t ? t.won : 0;
+  document.getElementById('tfDrawn').value = t ? t.drawn : 0;
+  document.getElementById('tfLost').value = t ? t.lost : 0;
+  document.getElementById('tfGf').value = t ? t.gf : 0;
+  document.getElementById('tfGa').value = t ? t.ga : 0;
+  document.getElementById('tfDelete').style.display = t ? 'block' : 'none';
+  populateLeagueOptions();
+  openSheet('sheetTeam');
+}
+document.getElementById('tfSave').addEventListener('click', () => {
+  const id = document.getElementById('tfId').value || uid();
+  const name = document.getElementById('tfName').value.trim();
+  if (!name) { toast('Team name required'); return; }
+  const t = {
+    id, name,
+    league: document.getElementById('tfLeague').value.trim() || 'General',
+    form: document.getElementById('tfForm').value.trim().toUpperCase(),
+    played: Number(document.getElementById('tfPlayed').value||0),
+    won: Number(document.getElementById('tfWon').value||0),
+    drawn: Number(document.getElementById('tfDrawn').value||0),
+    lost: Number(document.getElementById('tfLost').value||0),
+    gf: Number(document.getElementById('tfGf').value||0),
+    ga: Number(document.getElementById('tfGa').value||0),
+  };
+  const idx = teams.findIndex(x=>x.id===id);
+  if (idx>=0) teams[idx]=t; else teams.push(t);
+  save(LS.teams, teams);
+  closeSheets(); toast('Team saved'); renderTeamsSheet(); refreshAll();
+});
+document.getElementById('tfDelete').addEventListener('click', () => {
+  const id = document.getElementById('tfId').value;
+  teams = teams.filter(x=>x.id!==id);
+  save(LS.teams, teams);
+  closeSheets(); toast('Team deleted'); renderTeamsSheet(); refreshAll();
+});
+
+/* ============ MORE MENU ROUTES ============ */
+document.querySelectorAll('[data-open]').forEach(row => {
+  row.addEventListener('click', () => {
+    const key = row.dataset.open;
+    if (key==='teams') { renderTeamsSheet(); openSheet('sheetTeamsList'); }
+    if (key==='leagues') { renderLeaguesSheet(); openSheet('sheetLeagues'); }
+    if (key==='backup') openSheet('sheetBackup');
+    if (key==='settings') { document.getElementById('setName').value = settings.name||''; document.getElementById('setHomeAdv').value = settings.homeAdv||8; openSheet('sheetSettings'); }
+    if (key==='about') openSheet('sheetAbout');
+  });
+});
+
+function renderLeaguesSheet(){
+  const ls = leaguesList();
+  const el = document.getElementById('leaguesBody');
+  if (!ls.length) { el.innerHTML = emptyHtml('🏆','No leagues yet','Leagues are created automatically when you add a team or fixture with a league name.'); return; }
+  el.innerHTML = ls.map(l => {
+    const tCount = teams.filter(t=>t.league===l).length;
+    const fCount = fixtures.filter(f=>f.league===l).length;
+    return `<div class="list-row"><div><div class="title">🏆 ${l}</div><div class="sub">${tCount} teams · ${fCount} fixtures</div></div></div>`;
+  }).join('');
+}
+
+document.getElementById('setSave').addEventListener('click', () => {
+  settings.name = document.getElementById('setName').value.trim();
+  settings.homeAdv = Number(document.getElementById('setHomeAdv').value);
+  save(LS.settings, settings);
+  closeSheets(); toast('Settings saved'); refreshAll();
+});
+document.getElementById('resetAllBtn').addEventListener('click', () => {
+  if (!confirm('This will erase all teams, fixtures and settings on this device. Continue?')) return;
+  localStorage.removeItem(LS.teams); localStorage.removeItem(LS.fixtures); localStorage.removeItem(LS.settings); localStorage.removeItem(LS.seeded);
+  teams = []; fixtures = []; settings = { name:'', homeAdv:8 };
+  seedIfEmpty();
+  closeSheets(); toast('Data reset'); refreshAll();
+});
+
+/* ============ BACKUP ============ */
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const data = { teams, fixtures, settings, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'predictpro-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast('Backup exported');
+});
+document.getElementById('importFile').addEventListener('change', (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!data.teams || !data.fixtures) throw new Error('bad file');
+      teams = data.teams; fixtures = data.fixtures; settings = data.settings || settings;
+      save(LS.teams, teams); save(LS.fixtures, fixtures); save(LS.settings, settings);
+      closeSheets(); toast('Backup restored'); refreshAll();
+    } catch(err) { toast('Could not read that file'); }
+  };
+  reader.readAsText(file);
+});
+
+/* ============ SEARCH ============ */
+document.getElementById('searchBtn').addEventListener('click', () => { document.getElementById('searchInput').value=''; document.getElementById('searchResults').innerHTML=''; openSheet('sheetSearch'); setTimeout(()=>document.getElementById('searchInput').focus(),200); });
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  const el = document.getElementById('searchResults');
+  if (!q) { el.innerHTML=''; return; }
+  const teamHits = teams.filter(t => t.name.toLowerCase().includes(q));
+  const fixtureHits = fixtures.filter(f => {
+    const h = teamById(f.homeId)?.name.toLowerCase()||'', a = teamById(f.awayId)?.name.toLowerCase()||'';
+    return h.includes(q) || a.includes(q) || (f.league||'').toLowerCase().includes(q);
+  });
+  let html = '';
+  if (teamHits.length) html += `<div class="section-head" style="margin-top:4px"><h2>Teams</h2></div>` + teamHits.map(t=>`<div class="list-row" data-team-edit="${t.id}"><div><div class="title">${t.name}</div><div class="sub">${t.league}</div></div><div class="chev">›</div></div>`).join('');
+  if (fixtureHits.length) html += `<div class="section-head"><h2>Fixtures</h2></div>` + fixtureHits.map(f=>fixtureCardHtml(f)).join('');
+  el.innerHTML = html || emptyHtml('🔎','No results','Try a different search term.');
+  el.querySelectorAll('[data-team-edit]').forEach(r => r.onclick = () => { closeSheets(); setTimeout(()=>openTeamForm(r.dataset.teamEdit),150); });
+  el.querySelectorAll('[data-fixture]').forEach(r => r.onclick = () => { closeSheets(); setTimeout(()=>openFixtureDetail(r.dataset.fixture),150); });
+});
+
+/* ============ NOTIFICATIONS ============ */
+function refreshNotifBadge(){
+  const tf = todaysFixtures().filter(f=>f.status!=='finished').length;
+  const badge = document.getElementById('notifBadge');
+  if (tf > 0) { badge.style.display='flex'; badge.textContent = tf; } else { badge.style.display='none'; }
+}
+document.getElementById('notifBtn').addEventListener('click', () => {
+  const tf = todaysFixtures().filter(f=>f.status!=='finished');
+  const picks = dailyPicks(3);
+  let html = '';
+  if (picks.length) {
+    html += `<div class="section-head" style="margin-top:4px"><h2>Today's top picks</h2></div>` + picks.map((x,i)=>pickRowHtml(x,i)).join('');
+  }
+  if (tf.length) {
+    html += `<div class="section-head"><h2>Kicking off today</h2></div>` + tf.map(f=>fixtureCardHtml(f,{hideOdds:true})).join('');
+  }
+  document.getElementById('notifBody').innerHTML = html || emptyHtml('🔔','All quiet','No fixtures or picks for today yet.');
+  document.querySelectorAll('#notifBody [data-fixture]').forEach(r => r.onclick = () => { closeSheets(); setTimeout(()=>openFixtureDetail(r.dataset.fixture),150); });
+  openSheet('sheetNotif');
+});
+
+/* ============ REFRESH ALL ============ */
+function refreshAll(){
+  renderHome();
+  const active = document.querySelector('nav.bottom button.active')?.dataset.nav;
+  if (active==='fixtures') renderFixturesView();
+  if (active==='predictions') renderPredictionsView();
+  if (active==='picks') renderPicksView();
+}
+refreshAll();
+
+/* ============ PWA ============ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "PredictPro — Football Predictions",
+  "short_name": "PredictPro",
+  "description": "Fixtures, odds, and table-based football predictions with daily special picks.",
+  "start_url": "./predictpro.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0D1310",
+  "theme_color": "#123326",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
